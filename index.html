@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ColonialBackdrop</title>
+
+    <!-- CSS Framework: Foundation -->
+    <!-- foundation-float.min.css: Compressed CSS with legacy Float Grid -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/foundation-sites@6.6.3/dist/css/foundation-float.min.css" integrity="sha256-4ldVyEvC86/kae2IBWw+eJrTiwNEbUUTmN0zkP4luL4=" crossorigin="anonymous">
+    <!-- foundation-prototype.min.css: Compressed CSS with prototyping classes -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/foundation-sites@6.6.3/dist/css/foundation-prototype.min.css" integrity="sha256-BiKflOunI0SIxlTOOUCQ0HgwXrRrRwBkIYppEllPIok=" crossorigin="anonymous">
+    <!-- foundation-rtl.min.css: Compressed CSS with right-to-left reading direction -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/foundation-sites@6.6.3/dist/css/foundation-rtl.min.css" integrity="sha256-F+9Ns8Z/1ZISonBbojH743hsmF3x3AlQdJEeD8DhQsE=" crossorigin="anonymous">
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+
+    <!-- Load d3.js -->
+    <script src="https://d3js.org/d3.v3.js"></script>
+
+    <script src="script.js" defer></script>
+    <script>
+        $(document).ready(function() {
+            loadData();
+        });
+    </script>
+
+
+    <style type="text/css">
+        svg {
+            font: 10px sans-serif;
+            shape-rendering: crispEdges;
+        }
+
+        .axis path,
+        .axis line {
+            fill: none;
+            stroke: #000;
+        }
+
+        path.domain {
+            stroke: none;
+        }
+
+        .y .tick line {
+            stroke: #ddd;
+        }
+
+        h6 {
+            margin-top: 1rem;
+            margin-left: 1rem;
+            color: black;
+            font-weight: 800;
+        }
+
+        button.secondary.active, .button.secondary.active {
+            background-color: #dddddd;
+        }
+        button.secondary.active:hover, .button.secondary.active:hover {
+            background-color: #dddddd;
+        }
+
+
+
+    </style>
+</head>
+
+
+
+<body>
+
+<div class="top-bar">
+    <div class="top-bar-left">
+        <ul class="dropdown menu" data-dropdown-menu>
+            <li class="menu-text">Colonial Backdrop</li>
+        </ul>
+    </div>
+
+</div>
+<div class="grid-x grid-padding-x">
+    <div class="cell medium-3">
+        <p><h6>Selection</h6></p>
+        <div class="button-group stacked hollow" id="selection">
+            <a class="button secondary active" id="gender" onclick="loadGender();">Gender</a>
+            <a class="button secondary" id="arrival" onclick="loadArrivals();">Arrival Ports</a>
+            <a class="button secondary" id="origin" onclick="loadOrigins();">Departure Ports</a>
+            <a class="button secondary" id="protester" onclick="loadProtesters()">Political Convicts</a>
+        </div>
+        <p><h6>Representation</h6></p>
+        <div class="button-group hollow" >
+            <a class="button secondary active" id="absolute" onclick="loadAbsolute();">Absolute</a>
+            <a class="button secondary" id="cummulative" onclick="loadCummulative();">Cummulative</a>
+        </div>
+        <div>
+            <fieldset class="detail" id="genderFields">
+                <p><h6>Detail</h6></p>
+                <div>
+                    <input id="male" type="checkbox" checked="true" onclick="tickedBoxesTrigger()">
+                    <label for="male">Male</label>
+                </div>
+                <div>
+                    <input id="female" type="checkbox" checked="true" onclick="tickedBoxesTrigger()">
+                    <label for="female">Female</label>
+                </div>
+            </fieldset>
+            <fieldset class="detail hide" id="arrivalFields">
+                <p><h6>Detail</h6></p>
+                <div>
+                    <input id="sydney" type="checkbox" checked="true" onclick="tickedBoxesTrigger()">
+                    <label for="sydney">Sydney</label>
+                </div>
+                <div>
+                    <input id="hobart" type="checkbox" checked="true" onclick="tickedBoxesTrigger()">
+                    <label for="hobart">Hobart</label>
+                </div>
+                <div>
+                    <input id="norfolk" type="checkbox" checked="true" onclick="tickedBoxesTrigger()">
+                    <label for="norfolk">Norfolk Island</label>
+                </div>
+                <div>
+                    <input id="port" type="checkbox" checked="true" onclick="tickedBoxesTrigger()">
+                    <label for="port">Port Phillip</label>
+                </div>
+                <div>
+                    <input id="moreton" type="checkbox" checked="true" onclick="tickedBoxesTrigger()">
+                    <label for="moreton">Moreton Bay</label>
+                </div>
+                <div>
+                    <input id="swan" type="checkbox" checked="true" onclick="tickedBoxesTrigger()">
+                    <label for="swan">Swan River</label>
+                </div>
+            </fieldset>
+            <fieldset class="detail hide" id="departureFields">
+                <p><h6>Detail</h6></p>
+                <div>
+                    <input id="england" type="checkbox" checked="true" onclick="tickedBoxesTrigger()">
+                    <label for="england">England</label>
+                </div>
+                <div>
+                    <input id="ireland" type="checkbox" checked="true" onclick="tickedBoxesTrigger()">
+                    <label for="ireland">Ireland</label>
+                </div>
+                <div>
+                    <input id="overseas" type="checkbox" checked="true" onclick="tickedBoxesTrigger()">
+                    <label for="overseas">Overseas Territories</label>
+                </div>
+            </fieldset>
+        </div>
+
+    </div>
+    <div class="cell medium-9" >
+        <div id="bar_chart">
+    </div>
+</div>
+
+
+</body>
+
+
+</html>
