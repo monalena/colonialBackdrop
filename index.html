@@ -24,6 +24,7 @@
 
     <!-- Load VUE: development version, includes helpful console warnings -->
     <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script src="https://unpkg.com/vuex@3.5.1/dist/vuex.js"></script>
 
     <script src="script.js" defer></script>
     <!--<script>-->
@@ -83,91 +84,12 @@
         </div>
         <div class="top-bar-right">
             <ul class="menu">
-                <button class="button float-right secondary tiny" type="button" data-toggle="dropdown2">Info</button>
-                <div class="dropdown-pane bottom" id="dropdown2" dropdown>
-                    The data is sourced from Charles Bateson, The convict ships, 1787-1868 and George Rudé, Protest & Punishment. The Story of Social and Political Protesters transported to Australia, 1788-1868.
-                    The application is built with Vue.js, foundation.js and D3.js v3.
-                </div>
+                <info-button></info-button>
             </ul>
         </div>
 
     </div>
-    <div class="grid-x grid-padding-x">
-        <div class="cell medium-3">
-            <h6>Selection</h6>
-            <div class="button-group stacked hollow" id="selection">
-                <a class="button secondary active" id="gender" @click="loadGender()">Gender</a>
-                <a class="button secondary" id="arrival" @click="loadArrivals()">Arrival Ports</a>
-                <a class="button secondary" id="origin" @click="loadOrigins()">Departure Ports</a>
-                <a class="button secondary" id="protester" @click="loadProtesters()">Political Convicts</a>
-            </div>
-            <h6>Representation</h6>
-            <div class="button-group hollow" >
-                <a class="button secondary active" id="absolute" @click="loadAbsolute()">Absolute</a>
-                <a class="button secondary" id="cummulative" @click="loadCummulative()">Cummulative</a>
-            </div>
-            <div>
-                <fieldset class="detail" id="genderFields">
-                    <p><h6>Detail</h6></p>
-                    <div>
-                        <input id="male" type="checkbox" checked="true" @click="tickedBoxesTrigger()">
-                        <label for="male">Male</label>
-                    </div>
-                    <div>
-                        <input id="female" type="checkbox" checked="true" @click="tickedBoxesTrigger()">
-                        <label for="female">Female</label>
-                    </div>
-                </fieldset>
-                <fieldset class="detail hide" id="arrivalFields">
-                    <h6>Detail</h6>
-                    <div>
-                        <input id="sydney" type="checkbox" checked="true" @click="tickedBoxesTrigger()">
-                        <label for="sydney">Sydney</label>
-                    </div>
-                    <div>
-                        <input id="hobart" type="checkbox" checked="true" @click="tickedBoxesTrigger()">
-                        <label for="hobart">Hobart</label>
-                    </div>
-                    <div>
-                        <input id="norfolk" type="checkbox" checked="true" @click="tickedBoxesTrigger()">
-                        <label for="norfolk">Norfolk Island</label>
-                    </div>
-                    <div>
-                        <input id="port" type="checkbox" checked="true" @click="tickedBoxesTrigger()">
-                        <label for="port">Port Phillip</label>
-                    </div>
-                    <div>
-                        <input id="moreton" type="checkbox" checked="true" @click="tickedBoxesTrigger()">
-                        <label for="moreton">Moreton Bay</label>
-                    </div>
-                    <div>
-                        <input id="swan" type="checkbox" checked="true" @click="tickedBoxesTrigger()">
-                        <label for="swan">Swan River</label>
-                    </div>
-                </fieldset>
-                <fieldset class="detail hide" id="departureFields">
-                    <p><h6>Detail</h6></p>
-                    <div>
-                        <input id="england" type="checkbox" checked="true" @click="tickedBoxesTrigger()">
-                        <label for="england">England</label>
-                    </div>
-                    <div>
-                        <input id="ireland" type="checkbox" checked="true" @click="tickedBoxesTrigger()">
-                        <label for="ireland">Ireland</label>
-                    </div>
-                    <div>
-                        <input id="overseas" type="checkbox" checked="true" @click="tickedBoxesTrigger()">
-                        <label for="overseas">Overseas Territories</label>
-                    </div>
-                </fieldset>
-            </div>
-
-        </div>
-        <div class="cell medium-9" >
-            <div id="bar_chart">
-            </div>
-        </div>
-    </div>
+    <backdrop-visualisation></backdrop-visualisation>
 </div>
 </body>
 </html>
