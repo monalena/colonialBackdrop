@@ -10,19 +10,14 @@ Vue.component('info-button', {
                 'Vue.js, foundation.js and D3.js v3.'
         }
     },
-    // mounted: function() {
-    //     this.dropdown1 = new Foundation.Dropdown($('#dropdown1'), {
-    //         // These options can be declarative using the data attributes
-    //         vOffset: 20,
-    //     });
-    //     this.dropdown2 = new Foundation.Dropdown($('#dropdown2'), {
-    //         hover: true,
-    //     });
-    // },
-    // destroyed: function() {
-    //     this.dropdown1.destroy();
-    //     this.dropdown2.destroy();
-    // }
+    mounted: function() {
+        this.dropdown2 = new Foundation.Dropdown($('#dropdown2'), {
+            hover: true,
+        });
+    },
+    destroyed: function() {
+        this.dropdown2.destroy();
+    }
 })
 
 Vue.component('backdrop-visualisation', {
