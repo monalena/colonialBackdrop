@@ -20,80 +20,92 @@ Vue.component('info-button', {
     }
 })
 
-Vue.component('backdrop-visualisation', {
-    template: `<div class="grid-x grid-padding-x">
+Vue.component('control-panel', {
+    template: `
         <div class="cell medium-3">
             <h6>Selection</h6>
             <div class="button-group stacked hollow" id="selection">
-                <a class="button secondary active" id="gender" @click="loadGender()">Gender</a>
-                <a class="button secondary" id="arrival" @click="loadArrivals()">Arrival Ports</a>
-                <a class="button secondary" id="origin" @click="loadOrigins()">Departure Ports</a>
-                <a class="button secondary" id="protester" @click="loadProtesters()">Political Convicts</a>
+                <a class="button secondary active" id="gender" @click="$emit('loadGender')">Gender</a>
+                <a class="button secondary" id="arrival" @click="$emit('loadArrivals')">Arrival Ports</a>
+                <a class="button secondary" id="origin" @click="$emit('loadOrigins')">Departure Ports</a>
+                <a class="button secondary" id="protester" @click="$emit('loadProtesters')">Political Convicts</a>
             </div>
             <h6>Representation</h6>
             <div class="button-group hollow" >
-                <a class="button secondary active" id="absolute" @click="loadAbsolute()">Absolute</a>
-                <a class="button secondary" id="cummulative" @click="loadCummulative()">Cummulative</a>
+                <a class="button secondary active" id="absolute" @click="$emit('loadAbsolute')">Absolute</a>
+                <a class="button secondary" id="cummulative" @click="$emit('loadCummulative')">Cummulative</a>
             </div>
             <div>
                 <fieldset class="detail" id="genderFields">
-                    <p><h6>Detail</h6></p>
+                    <h6>Detail</h6>
                     <div>
-                        <input id="male" type="checkbox" checked="true" @click="tickedBoxesTrigger()">
+                        <input id="male" type="checkbox" checked="true" @click="$emit('tickedBoxesTrigger')">
                         <label for="male">Male</label>
                     </div>
                     <div>
-                        <input id="female" type="checkbox" checked="true" @click="tickedBoxesTrigger()">
+                        <input id="female" type="checkbox" checked="true" @click="$emit('tickedBoxesTrigger')">
                         <label for="female">Female</label>
                     </div>
                 </fieldset>
                 <fieldset class="detail hide" id="arrivalFields">
                     <h6>Detail</h6>
                     <div>
-                        <input id="sydney" type="checkbox" checked="true" @click="tickedBoxesTrigger()">
+                        <input id="sydney" type="checkbox" checked="true" @click="$emit('tickedBoxesTrigger')">
                         <label for="sydney">Sydney</label>
                     </div>
                     <div>
-                        <input id="hobart" type="checkbox" checked="true" @click="tickedBoxesTrigger()">
+                        <input id="hobart" type="checkbox" checked="true" @click="$emit('tickedBoxesTrigger')">
                         <label for="hobart">Hobart</label>
                     </div>
                     <div>
-                        <input id="norfolk" type="checkbox" checked="true" @click="tickedBoxesTrigger()">
+                        <input id="norfolk" type="checkbox" checked="true" @click="$emit('tickedBoxesTrigger')">
                         <label for="norfolk">Norfolk Island</label>
                     </div>
                     <div>
-                        <input id="port" type="checkbox" checked="true" @click="tickedBoxesTrigger()">
+                        <input id="port" type="checkbox" checked="true" @click="$emit('tickedBoxesTrigger')">
                         <label for="port">Port Phillip</label>
                     </div>
                     <div>
-                        <input id="moreton" type="checkbox" checked="true" @click="tickedBoxesTrigger()">
+                        <input id="moreton" type="checkbox" checked="true" @click="$emit('tickedBoxesTrigger')">
                         <label for="moreton">Moreton Bay</label>
                     </div>
                     <div>
-                        <input id="swan" type="checkbox" checked="true" @click="tickedBoxesTrigger()">
+                        <input id="swan" type="checkbox" checked="true" @click="$emit('tickedBoxesTrigger')">
                         <label for="swan">Swan River</label>
                     </div>
                 </fieldset>
                 <fieldset class="detail hide" id="departureFields">
-                    <p><h6>Detail</h6></p>
+                    <h6>Detail</h6>
                     <div>
-                        <input id="england" type="checkbox" checked="true" @click="tickedBoxesTrigger()">
+                        <input id="england" type="checkbox" checked="true" @click="$emit('tickedBoxesTrigger')">
                         <label for="england">England</label>
                     </div>
                     <div>
-                        <input id="ireland" type="checkbox" checked="true" @click="tickedBoxesTrigger()">
+                        <input id="ireland" type="checkbox" checked="true" @click="$emit('tickedBoxesTrigger')">
                         <label for="ireland">Ireland</label>
                     </div>
                     <div>
-                        <input id="overseas" type="checkbox" checked="true" @click="tickedBoxesTrigger()">
+                        <input id="overseas" type="checkbox" checked="true" @click="$emit('tickedBoxesTrigger')">
                         <label for="overseas">Overseas Territories</label>
                     </div>
                 </fieldset>
             </div>
         </div>
-        <div class="cell medium-9" >
+        `
+}, 'control-panel')
+
+Vue.component('visualisation', {
+    template: `<div class="cell medium-9" >
             <div id="bar_chart"></div>
-        </div>
+        </div>`
+})
+
+Vue.component('backdrop-visualisation', {
+    template: `<div class="grid-x grid-padding-x">
+        <control-panel @loadGender="loadGender" @loadArrivals="loadArrivals" @loadOrigins="loadOrigins" 
+                    @loadProtesters="loadProtesters" @loadAbsolute="loadAbsolute" @loadCummulative="loadCummulative" 
+                    @tickedBoxesTrigger="tickedBoxesTrigger"></control-panel>
+        <visualisation></visualisation>
     </div>`,
     data: function () {
         return {
@@ -121,8 +133,11 @@ Vue.component('backdrop-visualisation', {
             genderColors: ["287271", "C64C2E"],
             arrivalColors: ["264653", "2a9d8f", "8cca9c", "e9c46a", "e76f51", "a4290b"],
             departureColors: ["8AB17D", "EFB366", "E76F51"],
-            protesterColors: ["264653", "e9c46a"]
-
+            protesterColors: ["264653", "e9c46a"],
+            // Specific variables for the bar chart
+            dataset: [],
+            selectedLegendVars: [],
+            selectedColors: []
         }
     },
     methods: {
@@ -159,13 +174,11 @@ Vue.component('backdrop-visualisation', {
             for (let i = 0; i < visibleBoxes.length; i++) {
                 this.checkedBoxes.push(visibleBoxes[i].checked);
             }
-            d3.select("svg").remove();
             this.chooseParameters(this.convictData);
         },
 
         // BUTTON functions connected to buttons triggering new bar charts
         loadAbsolute: function () {
-            d3.select("svg").remove();
             this.cummulative = false;
             this.chooseParameters(this.convictData);
             document.querySelector("#absolute").setAttribute("class", "button secondary active");
@@ -173,7 +186,6 @@ Vue.component('backdrop-visualisation', {
         },
 
         loadCummulative: function () {
-            d3.select("svg").remove();
             this.cummulative = true;
             this.chooseParameters(this.convictData);
             document.querySelector("#cummulative").setAttribute("class", "button secondary active");
@@ -181,7 +193,6 @@ Vue.component('backdrop-visualisation', {
         },
 
         loadGender: function () {
-            d3.select("svg").remove(); //remove the old svg
             this.selection = 0; // 0 for gender, 1 for arrival, 2 for departure, 3 for protester selection
             this.colorset = this.genderColors; // pick the right color set for this selection
             this.setButtonsPlain(); //set the background color of all button group to plain, then make this one active
@@ -193,7 +204,6 @@ Vue.component('backdrop-visualisation', {
         },
 
         loadArrivals: function () {
-            d3.select("svg").remove();
             this.selection = 1;
             //Vue.set(app.data, 'colorset', this.arrivalColors);
             this.colorset = this.arrivalColors;
@@ -206,7 +216,6 @@ Vue.component('backdrop-visualisation', {
         },
 
         loadOrigins: function () {
-            d3.select("svg").remove();
             this.selection = 2;
             this.colorset = this.departureColors;
             this.setButtonsPlain();
@@ -218,7 +227,6 @@ Vue.component('backdrop-visualisation', {
         },
 
         loadProtesters: function () {
-            d3.select("svg").remove();
             this.selection = 3;
             this.colorset = this.protesterColors;
             this.setButtonsPlain();
@@ -279,8 +287,8 @@ Vue.component('backdrop-visualisation', {
             );
 
             let selectedColvars = indices.map(i => colvars[i]);
-            let selectedLegendVars = indices.map(i => legendVars[i]);
-            let selectedColors = indices.map(i => colors[i]);
+            selectedLegendVars = indices.map(i => legendVars[i]);
+            selectedColors = indices.map(i => colors[i]);
 
             // Transpose the data into layers
             dataset = d3.layout.stack()(selectedColvars.map(function (selectedLegendVars) {
@@ -295,6 +303,7 @@ Vue.component('backdrop-visualisation', {
 
         // DRAW function to create the bar chart
         createBarchart: function (data, legendvars, selectedColors) {
+            d3.select("svg").remove();
             let dataset = data;
             // set the dimensions and margins of the graph
             let margin = {top: 10, right: 160, bottom: 40, left: 40},
