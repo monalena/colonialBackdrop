@@ -10,4 +10,4 @@ The dataset is sourced from
 * Charles Bateson, The convict ships, 1787-1868.
 * George Rudé, Protest & Punishment. The Story of Social and Political Protesters transported to Australia, 1788-1868.
 
-Application built with vue.js, foundation.js and D3.js v3. 
+Application built with vue.js, foundation.js and D3.js v5. 
