@@ -359,7 +359,7 @@ Vue.component('backdrop-visualisation', {
             let xAxis = d3.axisBottom()
                 .scale(x)
                 .tickFormat(function (d) {
-                    return d.getFullYear() % 4 === 0 ? d3.timeFormat("%Y")(d) : ""
+                    return d.getFullYear() % 10 === 0 ? d3.timeFormat("%Y")(d) : ""
                 });
 
             svg.append("g")
