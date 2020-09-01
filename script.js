@@ -7,7 +7,7 @@ Vue.component('info-button', {
         return {
             information: 'The data is sourced from Charles Bateson, The convict ships, 1787-1868 and George Rudé, Protest & Punishment. ' +
                 'The Story of Social and Political Protesters transported to Australia, 1788-1868. The application is built with ' +
-                'Vue.js, foundation.js and D3.js v3.'
+                'Vue.js, foundation.js and D3.js v5.'
         }
     },
     mounted: function() {
@@ -180,14 +180,14 @@ Vue.component('backdrop-visualisation', {
         // BUTTON functions connected to buttons triggering new bar charts
         loadAbsolute: function () {
             this.cummulative = false;
-            this.chooseParameters(this.convictData);
+            this.chooseParameters(convictData);
             document.querySelector("#absolute").setAttribute("class", "button secondary active");
             document.querySelector("#cummulative").setAttribute("class", "button secondary");
         },
 
         loadCummulative: function () {
             this.cummulative = true;
-            this.chooseParameters(this.convictData);
+            this.chooseParameters(convictData);
             document.querySelector("#cummulative").setAttribute("class", "button secondary active");
             document.querySelector("#absolute").setAttribute("class", "button secondary");
         },
@@ -200,7 +200,7 @@ Vue.component('backdrop-visualisation', {
             this.clearUp(); // hide all optional checkboxes, then show this one
             document.querySelector('#genderFields').setAttribute("class", "detail");
             this.setCheckboxArrayLength(this.colorset); // set the right number of true Boolean values in the checkbox array
-            this.chooseParameters(this.convictData); // choose the correct data columns
+            this.chooseParameters(convictData); // choose the correct data columns
         },
 
         loadArrivals: function () {
@@ -212,7 +212,7 @@ Vue.component('backdrop-visualisation', {
             this.clearUp();
             document.querySelector('#arrivalFields').setAttribute("class", "detail");
             this.setCheckboxArrayLength(this.colorset);
-            this.chooseParameters(this.convictData);
+            this.chooseParameters(convictData);
         },
 
         loadOrigins: function () {
@@ -223,7 +223,7 @@ Vue.component('backdrop-visualisation', {
             this.clearUp();
             document.querySelector('#departureFields').setAttribute("class", "detail");
             this.setCheckboxArrayLength(this.colorset);
-            this.chooseParameters(this.convictData);
+            this.chooseParameters(convictData);
         },
 
         loadProtesters: function () {
@@ -233,7 +233,7 @@ Vue.component('backdrop-visualisation', {
             document.querySelector("#protester").setAttribute("class", "button secondary active");
             this.clearUp();
             this.setCheckboxArrayLength(this.colorset);
-            this.chooseParameters(this.convictData);
+            this.chooseParameters(convictData);
         },
 
         // MAIN function to stack the dataset based on the right parameters
@@ -241,7 +241,6 @@ Vue.component('backdrop-visualisation', {
             let colvars = [];
             let legendVars = [];
             let colors = this.colorset;
-            var parse = d3.time.format("%Y").parse;
 
             if (this.cummulative === false) {
                 switch (this.selection) {
@@ -289,13 +288,20 @@ Vue.component('backdrop-visualisation', {
             let selectedColvars = indices.map(i => colvars[i]);
             selectedLegendVars = indices.map(i => legendVars[i]);
             selectedColors = indices.map(i => colors[i]);
+            console.log(selectedColvars);
 
             // Transpose the data into layers
-            dataset = d3.layout.stack()(selectedColvars.map(function (selectedLegendVars) {
-                return this.convictData.map(function (d) {
-                    return {x: parse(d.Year), y: +d[selectedLegendVars]};
-                });
-            }));
+            let dataset = d3.stack()
+                .keys(selectedColvars)(data)
+                .map(d => (d.forEach(v => v.key = d.key), d));
+
+
+            // let dataset = d3.layout.stack()(selectedColvars.map( (selectedLegendVars) => {
+            //     return this.convictData.map(function (d) {
+            //         return {x: parse(d.Year), y: +d[selectedLegendVars]};
+            //     });
+            // }));
+            console.log("data",data);
             console.log(dataset);
 
             this.createBarchart(dataset, selectedLegendVars, selectedColors);
@@ -321,38 +327,39 @@ Vue.component('backdrop-visualisation', {
 
 
             // Set x, y and colors
-            let x = d3.scale.ordinal()
+            let x = d3.scaleBand()
                 .domain(dataset[0].map(function (d) {
-                    return d.x;
+                    return d.data.Year;
                 }))
-                .rangeRoundBands([10, width - 10], 0.02);
+                .rangeRound([10, width - 10], 0.02);
 
-            let y = d3.scale.linear()
-                .domain([0, d3.max(dataset, function (d) {
-                    return d3.max(d, function (d) {
-                        return d.y0 + d.y;
-                    });
-                })])
-                .range([height, 0]);
+            let y = d3.scaleLinear()
+                .domain([0, d3.max(dataset, d => d3.max(d, d => d[1]))])
+                .nice()
+                .rangeRound([height, 0]);
+            // let y = d3.scaleLinear()
+            //     .domain([0, d3.max(dataset, function (d) {
+            //         return d3.max(d, function (d) {
+            //             return d[0] + d[1];
+            //         });
+            //     })]).nice()
+            //     .range([height, 0]);
 
-            //var colors = ["b33040", "#d25c4d", "#f2b447", "#d9d574"];
             let colors = selectedColors.slice(0, dataset.length);
 
             // Define and draw axes
-            let yAxis = d3.svg.axis()
+            let yAxis = d3.axisLeft()
                 .scale(y)
-                .orient("left")
                 .ticks(10)
                 .tickSize(-width, 0, 0)
                 .tickFormat(function (d) {
                     return d
                 });
 
-            let xAxis = d3.svg.axis()
+            let xAxis = d3.axisBottom()
                 .scale(x)
-                .orient("bottom")
                 .tickFormat(function (d) {
-                    return d.getFullYear() % 4 === 0 ? d3.time.format("%Y")(d) : ""
+                    return d.getFullYear() % 4 === 0 ? d3.timeFormat("%Y")(d) : ""
                 });
 
             svg.append("g")
@@ -374,7 +381,8 @@ Vue.component('backdrop-visualisation', {
             // Create groups for each series, rects for each segment
             let groups = svg.selectAll("g.cost")
                 .data(dataset)
-                .enter().append("g")
+                .enter()
+                .append("g")
                 .attr("class", "cost")
                 .style("fill", function (d, i) {
                     return colors[i];
@@ -386,16 +394,10 @@ Vue.component('backdrop-visualisation', {
                 })
                 .enter()
                 .append("rect")
-                .attr("x", function (d) {
-                    return x(d.x);
-                })
-                .attr("y", function (d) {
-                    return y(d.y0 + d.y);
-                })
-                .attr("height", function (d) {
-                    return y(d.y0) - y(d.y0 + d.y);
-                })
-                .attr("width", x.rangeBand())
+                .attr('x', d => x(d.data.Year))
+                .attr('y', d => y(d[1]))
+                .attr('height', d => y(d[0]) - y(d[1]))
+                .attr('width', x.bandwidth() - 1)
                 .on("mouseover", function () {
                     tooltip.style("display", null);
                 })
@@ -406,7 +408,7 @@ Vue.component('backdrop-visualisation', {
                     var xPosition = d3.mouse(this)[0] - 15;
                     var yPosition = d3.mouse(this)[1] - 25;
                     tooltip.attr("transform", "translate(" + xPosition + "," + yPosition + ")");
-                    tooltip.select("text").text(d.y);
+                    tooltip.select("text").text(d[1]);
                 });
 
 
@@ -470,50 +472,66 @@ Vue.component('backdrop-visualisation', {
             let tempNSW = 0, tempVDL = 0, tempNOR = 0, tempPP = 0, tempMOR = 0, tempWA = 0;
             let tempEng = 0, tempIre = 0, tempOve = 0;
             let tempProt = 0, tempNonprot = 0;
+            const parse = d3.timeParse("%Y");
 
             for (var i = 0; i < data.length; i++) {
                 //console.log(data[i].NOR);
 
+                data[i].Female = +data[i].Female;
                 tempFemale += +data[i].Female;
                 data[i].cumFemale = tempFemale;
 
+                data[i].Male = +data[i].Male;
                 tempMale += +data[i].Male;
                 data[i].cumMale = tempMale;
 
+                data[i].NSW = +data[i].NSW;
                 tempNSW += +data[i].NSW;
                 data[i].cumNSW = tempNSW;
 
+                data[i].VDL = +data[i].VDL;
                 tempVDL += +data[i].VDL;
                 data[i].cumVDL = tempVDL;
 
+                data[i].NOR = +data[i].NOR;
                 tempNOR += +data[i].NOR;
                 data[i].cumNOR = tempNOR;
 
+                data[i].PP = +data[i].PP;
                 tempPP += +data[i].PP;
                 data[i].cumPP = tempPP;
 
+                data[i].MOR = +data[i].MOR;
                 tempMOR += +data[i].MOR;
                 data[i].cumMOR = tempMOR;
 
+                data[i].WA = +data[i].WA;
                 tempWA += +data[i].WA;
                 data[i].cumWA = tempWA;
 
+                data[i].England = +data[i].England;
                 tempEng += +data[i].England;
                 data[i].cumEng = tempEng;
 
+                data[i].Ireland = +data[i].Ireland;
                 tempIre += +data[i].Ireland;
                 data[i].cumIre = tempIre;
 
+                data[i].Overseas = +data[i].Overseas;
                 tempOve += +data[i].Overseas;
                 data[i].cumOve = tempOve;
 
+                data[i].Protesters = +data[i].Protesters;
                 tempProt += +data[i].Protesters;
                 data[i].cumProt = tempProt;
 
+                data[i].Nonprotesters = +data[i].Nonprotesters;
                 tempNonprot += +data[i].Nonprotesters;
                 data[i].cumNon = tempNonprot;
 
-                //console.log(data[i].cumProt);
+                data[i].Year = parse(data[i].Year);
+
+                // console.log(data[i].Year);
             }
 
             convictData = data;
@@ -524,7 +542,7 @@ Vue.component('backdrop-visualisation', {
         };
 
         // LOAD function to get data and add cummulative counts
-        d3.csv("data/wideData.csv", dataLoaded);
+        d3.csv("data/wideData.csv").then(dataLoaded);
     }
 })
 
