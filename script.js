@@ -174,7 +174,7 @@ Vue.component('backdrop-visualisation', {
             for (let i = 0; i < visibleBoxes.length; i++) {
                 this.checkedBoxes.push(visibleBoxes[i].checked);
             }
-            this.chooseParameters(this.convictData);
+            this.chooseParameters(convictData);
         },
 
         // BUTTON functions connected to buttons triggering new bar charts
