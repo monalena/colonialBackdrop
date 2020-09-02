@@ -177,6 +177,15 @@ Vue.component('backdrop-visualisation', {
             this.chooseParameters(convictData);
         },
 
+        // HELPER function to set all checkboxes to back to checked when button is clicked
+        checkBoxes: function () {
+            let visible = document.querySelector(".detail:not(.hide)");
+            let visibleBoxes = visible.querySelectorAll('input');
+            for (let i = 0; i < visibleBoxes.length; i++) {
+                visibleBoxes[i].checked = true;
+            }
+        },
+
         // BUTTON functions connected to buttons triggering new bar charts
         loadAbsolute: function () {
             this.cummulative = false;
@@ -199,6 +208,7 @@ Vue.component('backdrop-visualisation', {
             document.querySelector("#gender").setAttribute("class", "button secondary active");
             this.clearUp(); // hide all optional checkboxes, then show this one
             document.querySelector('#genderFields').setAttribute("class", "detail");
+            this.checkBoxes(); //set all checkboxes to ticked when button is pressed (otherwise ticked of boxes stay off)
             this.setCheckboxArrayLength(this.colorset); // set the right number of true Boolean values in the checkbox array
             this.chooseParameters(convictData); // choose the correct data columns
         },
@@ -211,6 +221,7 @@ Vue.component('backdrop-visualisation', {
             document.querySelector("#arrival").setAttribute("class", "button secondary active");
             this.clearUp();
             document.querySelector('#arrivalFields').setAttribute("class", "detail");
+            this.checkBoxes();
             this.setCheckboxArrayLength(this.colorset);
             this.chooseParameters(convictData);
         },
@@ -222,6 +233,7 @@ Vue.component('backdrop-visualisation', {
             document.querySelector("#origin").setAttribute("class", "button secondary active");
             this.clearUp();
             document.querySelector('#departureFields').setAttribute("class", "detail");
+            this.checkBoxes();
             this.setCheckboxArrayLength(this.colorset);
             this.chooseParameters(convictData);
         },
@@ -288,21 +300,11 @@ Vue.component('backdrop-visualisation', {
             let selectedColvars = indices.map(i => colvars[i]);
             selectedLegendVars = indices.map(i => legendVars[i]);
             selectedColors = indices.map(i => colors[i]);
-            console.log(selectedColvars);
 
             // Transpose the data into layers
             let dataset = d3.stack()
                 .keys(selectedColvars)(data)
                 .map(d => (d.forEach(v => v.key = d.key), d));
-
-
-            // let dataset = d3.layout.stack()(selectedColvars.map( (selectedLegendVars) => {
-            //     return this.convictData.map(function (d) {
-            //         return {x: parse(d.Year), y: +d[selectedLegendVars]};
-            //     });
-            // }));
-            console.log("data",data);
-            console.log(dataset);
 
             this.createBarchart(dataset, selectedLegendVars, selectedColors);
         },
@@ -536,9 +538,7 @@ Vue.component('backdrop-visualisation', {
 
             convictData = data;
 
-
             this.chooseParameters(convictData);
-
         };
 
         // LOAD function to get data and add cummulative counts
